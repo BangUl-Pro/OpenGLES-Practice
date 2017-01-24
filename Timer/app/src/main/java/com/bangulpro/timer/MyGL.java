@@ -1,4 +1,4 @@
-package com.bangulpro.movepoint;
+package com.bangulpro.timer;
 
 import android.content.Context;
 import android.opengl.GLES10;
@@ -6,6 +6,7 @@ import android.opengl.GLES10;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Random;
 
 /**
  * Created by IronFactory on 2017. 1. 24..
@@ -16,11 +17,7 @@ public class MyGL extends GLES10 {
     Context context;
     int displayWidth, displayHeight;
     boolean isInit;
-
-    float x, y, speedX = .5f, speedY = .1f;
-
-    FloatBuffer pointVertexPointer, pointColorPointer;
-
+    float x, y, targetX, targetY;
 
     public MyGL(Context context) {
         this.context = context;
@@ -32,6 +29,9 @@ public class MyGL extends GLES10 {
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         return (FloatBuffer) buffer.put(array).position(0);
     }
+
+
+    FloatBuffer pointVertexPointer, pointColorPointer;
 
 
     public void init(int width, int height) {
@@ -49,35 +49,25 @@ public class MyGL extends GLES10 {
         pointColorPointer = loadPointer(pointColorArray);
 
         glClearColor(1,1,1,1);
-        glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
 
-        glViewport(0,0, displayWidth, displayHeight);
+        glViewport(0,0,displayWidth,displayHeight);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrthof(-10, 10, -15, 15, 0, 1);
+        glOrthof(-10,10,-15,15,0,1);
     }
 
+    MyTimer timer = new MyTimer(3000);
 
     public void main() {
         glClear(GL_COLOR_BUFFER_BIT);
+        timer.run(System.currentTimeMillis());
 
-        x += speedX;
-        y += speedY;
-        if (x < -10 || x > 10)
-            speedX = -speedX;
-        if (y < -15 || y > 15)
-            speedY = -speedY;
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glTranslatef(x,y,0);
-
-        glVertexPointer(2, GL_FLOAT, 0, pointVertexPointer);
-        glColorPointer(4, GL_FLOAT, 0, pointColorPointer);
-        glPointSize(30);
-
-        glDrawArrays(GL_POINTS, 0, 1);
+        if (timer.flag) {
+            Random r = new Random();
+            targetX = r.nextFloat() % 30 - 15;
+            targetY = r.nextFloat() % 30 - 15;
+        }
     }
 }
