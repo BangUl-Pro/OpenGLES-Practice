@@ -2,6 +2,7 @@ package com.bangulpro.timer;
 
 import android.content.Context;
 import android.opengl.GLES10;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,7 +18,7 @@ public class MyGL extends GLES10 {
     Context context;
     int displayWidth, displayHeight;
     boolean isInit;
-    float x, y, targetX, targetY;
+    float x, y, spdX = .1f, spdY = .1f;
 
     public MyGL(Context context) {
         this.context = context;
@@ -58,16 +59,29 @@ public class MyGL extends GLES10 {
         glOrthof(-10,10,-15,15,0,1);
     }
 
-    MyTimer timer = new MyTimer(3000);
+    MyTimer timer = new MyTimer(2000);
 
     public void main() {
-        glClear(GL_COLOR_BUFFER_BIT);
         timer.run(System.currentTimeMillis());
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        if (timer.flag) {
-            Random r = new Random();
-            targetX = r.nextFloat() % 30 - 15;
-            targetY = r.nextFloat() % 30 - 15;
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        if (!timer.flag) {
+            x += spdX;
+            y += spdY;
+
+            if (x < -10 || x > 10)
+                spdX = -spdX;
+            if (y < -15 || y > 15)
+                spdY = -spdY;
         }
+
+        glTranslatef(x, y, 0);
+        glPointSize(30);
+        glVertexPointer(2, GL_FLOAT, 0, pointVertexPointer);
+        glColorPointer(4, GL_FLOAT, 0, pointColorPointer);
+        glDrawArrays(GL_POINTS, 0, 1);
     }
 }

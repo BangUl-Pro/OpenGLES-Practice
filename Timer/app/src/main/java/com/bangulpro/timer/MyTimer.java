@@ -1,5 +1,7 @@
 package com.bangulpro.timer;
 
+import android.util.Log;
+
 /**
  * Created by IronFactory on 2017. 1. 24..
  */
@@ -16,9 +18,8 @@ public class MyTimer {
     void run(long now) {
         long t = now - start;
         if (t > delay) {
-            flag = true;
+            flag = !flag;
             start = now - (t - delay);
-        } else
-            flag = false;
+        }
     }
 }
