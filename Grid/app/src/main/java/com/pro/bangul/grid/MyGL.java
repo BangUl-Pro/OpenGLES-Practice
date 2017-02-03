@@ -47,5 +47,4 @@ public class MyGL extends GLES10 {
         axis.draw(this);
         grid.draw(this);
     }
-
 }
