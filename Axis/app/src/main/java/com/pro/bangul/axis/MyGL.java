@@ -23,7 +23,8 @@ public class MyGL extends GLES10 {
 
     final float HALF = .5f;
 
-    FloatBuffer axisVertexPointer, axisColorPointer;
+    FloatBuffer axisVertexPointer;      // axis의 정점 정보를 담는 배열
+    FloatBuffer axisColorPointer;       // axis의 색상 정보를 담는 배열
 
     public MyGL(Context context) {
         this.context = context;
@@ -40,31 +41,38 @@ public class MyGL extends GLES10 {
         displayHeight = height;
 
         float axisVertexArray[] = {
-                4,0,0,      0,0,0,      // x축 선
-                0,4,0,      0,0,0,      // y축 선
-                0,0,4,      0,0,0       // z축 선
+                4,0,0,      0,0,0,      // x축 기준선
+                0,4,0,      0,0,0,      // y축 기준선
+                0,0,4,      0,0,0       // z축 기준선
         };
         axisVertexPointer = loadPointer(axisVertexArray);
 
         float axisColorArray[] = {
-                1,0,0,1,      1,0,0,1,      // x축 색
-                0,1,0,1,      0,1,0,1,      // y축 색
-                0,0,1,1,      0,0,1,1,      // z축 색
+                1,0,0,1,      1,0,0,1,      // x축 기준선 색
+                0,1,0,1,      0,1,0,1,      // y축 기준선 색
+                0,0,1,1,      0,0,1,1,      // z축 기준선 색
         };
         axisColorPointer = loadPointer(axisColorArray);
 
         glClearColor(1,1,1,1);
 
+        // vertex와 color 정보를 사용하겠다.
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
 
+        // Matrix 0으로 초기화
         glMatrixMode(GL_PROJECTION);
+
+        // 단위 Matrix 준비
         glLoadIdentity();
+
+        // 투영법 설정
         GLU.gluPerspective(gl, 60, (float) displayWidth / displayHeight, 1, 100);
         GLU.gluLookAt(gl, 10,10,10, 0,0,0, 0, 1,0);
     }
 
     public void main() {
+        // 컬러 버퍼 초기화
         glClear(GL_COLOR_BUFFER_BIT);
 
         glMatrixMode(GL_MODELVIEW);
